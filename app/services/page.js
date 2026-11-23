@@ -38,39 +38,51 @@ function ServicesContent() {
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const params = new URLSearchParams({ page: String(page), limit: "9" });
-        if (debounced.search.trim()) params.set("search", debounced.search.trim());
-        if (debounced.location.trim()) params.set("location", debounced.location.trim());
-        if (debounced.category !== "all") params.set("category", debounced.category);
-        if (debounced.sort) params.set("sort", debounced.sort);
+    const params = new URLSearchParams({ page: String(page), limit: "9" });
+    if (debounced.search.trim()) params.set("search", debounced.search.trim());
+    if (debounced.location.trim()) params.set("location", debounced.location.trim());
+    if (debounced.category !== "all") params.set("category", debounced.category);
+    if (debounced.sort) params.set("sort", debounced.sort);
 
-        const res = await apiFetch(`/api/services?${params.toString()}`);
-        if (!cancelled) setData(res);
-      } catch (err) {
+    apiFetch(`/api/services?${params.toString()}`)
+      .then((res) => {
+        if (cancelled) return;
+        setData(res);
+        setError("");
+      })
+      .catch((err) => {
         if (!cancelled) setError(err.message || "Failed to load services");
-      } finally {
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false);
-      }
-    }
+      });
 
-    load();
     return () => {
       cancelled = true;
     };
   }, [debounced, page, reloadKey]);
 
   const updateFilter = (name, value) => {
+    setLoading(true);
     setFilters((f) => ({ ...f, [name]: value }));
     setPage(1);
   };
 
   const clearFilters = () => {
+    setLoading(true);
     setFilters({ search: "", location: "", category: "all", sort: "" });
     setPage(1);
+  };
+
+  const goToPage = (p) => {
+    setLoading(true);
+    setPage(p);
+  };
+
+  const retry = () => {
+    setError("");
+    setLoading(true);
+    setReloadKey((k) => k + 1);
   };
 
   return (
@@ -123,7 +135,7 @@ function ServicesContent() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="overflow-hidden rounded-xl border">
-              <div className="aspect-[4/3] animate-pulse bg-muted" />
+              <div className="aspect-4/3 animate-pulse bg-muted" />
               <div className="space-y-3 p-4">
                 <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
                 <div className="h-5 w-2/3 animate-pulse rounded bg-muted" />
@@ -136,7 +148,7 @@ function ServicesContent() {
       ) : error ? (
         <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
           <p className="font-medium text-red-700">{error}</p>
-          <Button className="mt-4" onClick={() => setReloadKey((k) => k + 1)}>
+          <Button className="mt-4" onClick={retry}>
             Try Again
           </Button>
         </div>
@@ -144,9 +156,7 @@ function ServicesContent() {
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed p-12 text-center">
           <SearchX className="h-10 w-10 text-muted-foreground" />
           <p className="text-lg font-medium">No services found</p>
-          <p className="text-sm text-muted-foreground">
-            Try changing your search or filters.
-          </p>
+          <p className="text-sm text-muted-foreground">Try changing your search or filters.</p>
           <Button variant="outline" onClick={clearFilters}>
             Clear Filters
           </Button>
@@ -162,11 +172,7 @@ function ServicesContent() {
 
           {data.totalPages > 1 && (
             <div className="mt-10 flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
+              <Button variant="outline" disabled={page <= 1} onClick={() => goToPage(page - 1)}>
                 Previous
               </Button>
               <span className="text-sm">
@@ -175,7 +181,7 @@ function ServicesContent() {
               <Button
                 variant="outline"
                 disabled={page >= data.totalPages}
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => goToPage(page + 1)}
               >
                 Next
               </Button>

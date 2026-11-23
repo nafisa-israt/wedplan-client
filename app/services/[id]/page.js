@@ -26,28 +26,29 @@ export default function ServiceDetailsPage() {
     }
   }, [isPending, session, id, router]);
 
+  const hasSession = Boolean(session);
+
   useEffect(() => {
-    if (!session) return;
+    if (!hasSession) return;
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const res = await apiFetch(`/api/services/${id}`);
-        if (!cancelled) setService(res.service);
-      } catch (err) {
+    apiFetch(`/api/services/${id}`)
+      .then((res) => {
+        if (cancelled) return;
+        setService(res.service);
+        setError("");
+      })
+      .catch((err) => {
         if (!cancelled) setError(err.message || "Failed to load service");
-      } finally {
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false);
-      }
-    }
+      });
 
-    load();
     return () => {
       cancelled = true;
     };
-  }, [id, session]);
+  }, [id, hasSession]);
 
   if (isPending || !session || loading) {
     return (
@@ -62,7 +63,9 @@ export default function ServiceDetailsPage() {
       <div className="mx-auto max-w-md px-4 py-24 text-center">
         <ShieldAlert className="mx-auto h-12 w-12 text-red-500" />
         <h1 className="mt-4 text-2xl font-bold">Service not available</h1>
-        <p className="mt-2 text-muted-foreground">{error || "This service could not be found."}</p>
+        <p className="mt-2 text-muted-foreground">
+          {error || "This service could not be found."}
+        </p>
         <Link href="/services" className={`${buttonVariants()} mt-6`}>
           Back to Services
         </Link>
@@ -108,7 +111,11 @@ export default function ServiceDetailsPage() {
                     activeImage === i ? "border-primary" : "border-transparent"
                   }`}
                 >
-                  <img src={img} alt={`${service.serviceName} ${i + 1}`} className="h-full w-full object-cover" />
+                  <img
+                    src={img}
+                    alt={`${service.serviceName} ${i + 1}`}
+                    className="h-full w-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -145,7 +152,9 @@ export default function ServiceDetailsPage() {
               <p className="text-xs text-muted-foreground">Vendor</p>
               <p className="flex items-center gap-1 font-medium">
                 {vendorName}
-                {vendor?.isPremium && <BadgeCheck className="h-4 w-4 text-primary" title="Premium Vendor" />}
+                {vendor?.isPremium && (
+                  <BadgeCheck className="h-4 w-4 text-primary" title="Premium Vendor" />
+                )}
               </p>
             </div>
           </div>
