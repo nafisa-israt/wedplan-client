@@ -87,9 +87,22 @@ export default function DashboardLayout({ children }) {
     if (!isPending && !session) router.replace("/signin");
   }, [isPending, session, router]);
 
-  useEffect(() => {
-    if (userId) loadMe();
-  }, [userId, loadMe]);
+    useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    apiFetch("/api/me", { auth: true })
+      .then((data) => {
+        if (cancelled) return;
+        setMe(data.user);
+        setError(null);
+      })
+      .catch((err) => {
+        if (!cancelled) setError({ message: err.message, status: err.status });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const items = me ? navByRole[me.role] || navByRole.customer : [];
   const allowed = me ? isAllowed(pathname, items) : true;
