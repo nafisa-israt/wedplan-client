@@ -93,13 +93,20 @@ export default function SignUpPage() {
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
-    const { error } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-      additionalData: { role },
-    });
-    if (error) {
-      toast.error(error.message || "Google sign up failed");
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+        newUserCallbackURL: "/dashboard",
+        errorCallbackURL: "/signup",
+        additionalData: { role },
+      });
+      if (error) {
+        toast.error(error.message || "Google sign up failed");
+        setGoogleLoading(false);
+      }
+    } catch (err) {
+      toast.error("Google sign up failed");
       setGoogleLoading(false);
     }
   };
