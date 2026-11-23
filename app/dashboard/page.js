@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useDashboard } from "@/components/dashboard/DashboardContext";
@@ -8,7 +9,10 @@ import AdminOverview from "@/components/dashboard/AdminOverview";
 export default function DashboardOverviewPage() {
   const { me } = useDashboard();
 
+  if (!me) return <div className="p-6">Loading dashboard...</div>;
+
   if (me.role === "vendor") return <VendorOverview />;
   if (me.role === "admin") return <AdminOverview />;
+
   return <CustomerOverview />;
 }
