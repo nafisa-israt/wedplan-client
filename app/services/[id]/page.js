@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
 import { buttonVariants } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import BookingForm from "@/components/BookingForm";
 
 export default function ServiceDetailsPage() {
   const { id } = useParams();
@@ -159,15 +160,13 @@ export default function ServiceDetailsPage() {
             </div>
           </div>
 
-          {/* Booking (পরের ধাপে আসল form বসবে) */}
-          <div className="rounded-xl border bg-rose-50/50 p-4">
-            <h2 className="mb-2 font-semibold">Book this service</h2>
+          {/* Booking */}
+          <div className="rounded-xl border bg-rose-50/50 p-5">
+            <h2 className="mb-3 text-lg font-semibold">Book this service</h2>
             {bookingBlockReason ? (
               <p className="text-sm text-muted-foreground">{bookingBlockReason}</p>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                Booking form will appear here in the next step.
-              </p>
+              <BookingForm serviceId={service._id} role={user.role} />
             )}
           </div>
         </div>

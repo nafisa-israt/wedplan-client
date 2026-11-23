@@ -1,44 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
-import { apiFetch } from "@/lib/api";
+import { useDashboard } from "@/components/dashboard/DashboardContext";
+import VendorOverview from "@/components/dashboard/VendorOverview";
+import CustomerOverview from "@/components/dashboard/CustomerOverview";
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-  const [serverInfo, setServerInfo] = useState("Checking with server...");
+export default function DashboardOverviewPage() {
+  const { me } = useDashboard();
 
-  useEffect(() => {
-    if (!isPending && !session) router.replace("/signin");
-  }, [isPending, session, router]);
+  if (me.role === "vendor") return <VendorOverview />;
+  if (me.role === "customer") return <CustomerOverview />;
 
-  useEffect(() => {
-    if (!session) return;
-    apiFetch("/api/me", { auth: true })
-      .then((d) => setServerInfo(`Server verified: ${d.user.email} (${d.user.role})`))
-      .catch((e) => setServerInfo(`Server error: ${e.message}`));
-  }, [session]);
-
-  if (isPending || !session) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const { user } = session;
+  // Admin Overview পরের ধাপে আসবে
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-3xl font-bold">Welcome, {user.name}</h1>
-      <p className="mt-2 text-muted-foreground">Email: {user.email}</p>
-      <p className="text-muted-foreground">
-        Role: <span className="font-semibold text-primary">{user.role}</span>
-      </p>
-      <p className="mt-4 rounded-md border bg-muted/40 p-3 text-sm">{serverInfo}</p>
+    <div className="rounded-xl border bg-card p-8">
+      <h1 className="text-2xl font-bold">Welcome, {me.name}</h1>
+      <p className="mt-2 text-muted-foreground">Your admin overview will appear here soon.</p>
     </div>
   );
 }
