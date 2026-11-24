@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# WedPlan — Wedding Planning Platform (Client)
 
-## Getting Started
+WedPlan is a role-based wedding planning platform where customers discover wedding services and request bookings, vendors publish services and manage requests (with an optional Premium subscription), and admins moderate users, services and transactions.
 
-First, run the development server:
+## Live Links
+
+- **Live Website:** https://wedplan-client-omega-beryl.vercel.app/
+- **Client Repository:** https://github.com/nafisa-israt/wedplan-client
+- **Server Repository:** https://github.com/nafisa-israt/wedplan-server
+- **Backend API:** https://wedplan-server-kr5y.onrender.com
+
+## Important Features
+
+**Customer**
+- Browse, search, filter (category, location) and sort (price asc/desc) approved services
+- View service details and submit booking requests
+- Track booking status and cancel pending requests
+- Customer dashboard with booking statistics
+
+**Vendor**
+- Create, update, delete services with image upload (ImgBB)
+- Free plan: up to 3 active services; Premium: unlimited
+- Accept or reject booking requests
+- Upgrade to Premium through Stripe Checkout (test mode)
+- Vendor dashboard with overview statistics
+
+**Admin**
+- Manage users (search, filter by role, block/unblock)
+- Approve, reject, change status or delete services
+- View platform transactions
+- Admin dashboard with platform statistics
+
+**General**
+- Email/password and Google authentication (Better Auth)
+- Role-based protected routes on client and server
+- JWT verification on the Express API
+- Premium activated only through verified Stripe webhook events
+- Fully responsive UI, toast notifications, loading and empty states
+- Framer Motion animations on the home page
+
+## Technology Stack
+
+- Next.js, JavaScript
+- Tailwind CSS, ShadCN UI
+- Better Auth (email/password + Google OAuth) with the JWT plugin
+- MongoDB
+- Framer Motion
+- Sonner (toasts), Lucide React (icons)
+- ImgBB (image hosting)
+- Stripe Checkout (via the server)
+
+## Installation
+
+```bash
+git clone https://github.com/nafisa-israt/wedplan-client.git
+cd wedplan-client
+npm install
+```
+
+## Environment Variables
+
+Create a `.env.local` file in the project root (never commit it):
+
+```env
+# Better Auth
+BETTER_AUTH_SECRET=your_long_random_secret
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# MongoDB
+MONGODB_URI=your_mongodb_connection_string        
+DB_NAME=your_database_name            
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# ImgBB
+IMGBB_API_KEY=your_imgbb_api_key
+
+# Backend API
+NEXT_PUBLIC_API_URL=http://localhost:5000         
+```
+
+## Required Application URLs
+
+- Google OAuth authorized JavaScript origin: `http://localhost:3000` (local), your Vercel URL (production)
+- Google OAuth redirect URI: `{BETTER_AUTH_URL}/api/auth/callback/google`
+
+## Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. The server repository must be running as well (see the server README).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Admin Access
 
-To learn more about Next.js, take a look at the following resources:
+Admin accounts cannot be created through public sign up. Admin credentials for evaluation are provided in the submission form.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Author
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Nafisa Israt
