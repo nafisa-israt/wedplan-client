@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { BadgeCheck, MapPin } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 export default function ServiceCard({ service }) {
   const { data: session } = authClient.useSession();
 
-  // লগইন না থাকলে View Details চাপলে Sign In পেজে যাবে
+  
   const detailsPath = `/services/${service._id}`;
   const href = session
     ? detailsPath
@@ -19,11 +20,13 @@ export default function ServiceCard({ service }) {
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition hover:shadow-md">
-      <div className="aspect-[4/3] overflow-hidden bg-muted">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         {service.images?.[0] && (
-          <img
+          <Image
             src={service.images[0]}
             alt={service.serviceName}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             className="h-full w-full object-cover transition duration-300 hover:scale-105"
           />
         )}
